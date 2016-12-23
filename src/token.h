@@ -55,11 +55,6 @@ Token_getEnd(struct Token* t);
 const char*
 TokenType_toString(enum TokenType type);
 
-// converts a punctuation character into a TokenType
-// includes symbols and operators but not names
-enum TokenType
-TokenType_punctuator(char c);
-
 #ifdef __cplusplus
 }
 #endif
