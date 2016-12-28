@@ -15,7 +15,7 @@ enum TokenType
 	TOKEN_ASTERISK,
 	TOKEN_SLASH,
 	TOKEN_CARET,
-	TOKEN_NAME,
+	TOKEN_INTEGER,
 	TOKEN_EOF,
 	TOKEN_INVALID
 };
@@ -25,25 +25,20 @@ enum TokenType
 struct Token
 {
 	enum TokenType type;
-	const char* begin;
-	const char* end;
+	long int value;
 };
 
 // initializes a Token
 void
-Token_init(struct Token* t, enum TokenType type, const char* begin, const char* end);
+Token_init(struct Token* t, enum TokenType type, long int value);
 
 // getter for type
 enum TokenType
 Token_getType(struct Token* t);
 
-// getter for begin
-const char*
-Token_getBegin(struct Token* t);
-
-// getter for end
-const char*
-Token_getEnd(struct Token* t);
+// getter for value
+int
+Token_getValue(struct Token* t);
 
 // converts a TokenType to a string
 const char*

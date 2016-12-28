@@ -1,11 +1,10 @@
 #include "token.h"
 
 void
-Token_init(struct Token* t, enum TokenType type, const char* begin, const char* end)
+Token_init(struct Token* t, enum TokenType type, long int value)
 {
 	t->type = type;
-	t->begin = begin;
-	t->end = end;
+	t->value = value;
 }
 
 enum TokenType
@@ -14,16 +13,10 @@ Token_getType(struct Token* t)
 	return t->type;
 }
 
-const char*
-Token_getBegin(struct Token* t)
+int
+Token_getValue(struct Token* t)
 {
-	return t->begin;
-}
-
-const char*
-Token_getEnd(struct Token* t)
-{
-	return t->end;
+	return t->value;
 }
 
 const char*
@@ -38,7 +31,7 @@ TokenType_toString(enum TokenType type)
 	case TOKEN_ASTERISK: return "token_asterisk";
 	case TOKEN_SLASH:    return "token_slash";
 	case TOKEN_CARET:    return "token_caret";
-	case TOKEN_NAME:     return "token_name";
+	case TOKEN_INTEGER:  return "token_integer";
 	case TOKEN_EOF:      return "token_eof";
 	default:             return "token_invalid";
 	}

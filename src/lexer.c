@@ -15,34 +15,27 @@ Lexer_next(struct Lexer* l)
 {
 	struct Token t;
 	char c;
-
 	do
 	{
 		c = *l->pos++;
 		enum TokenType type = match(c);
-
-		if (type == TOKEN_NAME && isalpha(c))
+		if (type != TOKEN_INVALID)
 		{
-			const char* begin = l->pos - 1;
-
-			while (isalpha(*l->pos))
+			int value;
+			if (type == TOKEN_INTEGER)
 			{
-				++l->pos;
+				value = strtol(l->pos - 1, (char**)&l->pos, 0);
 			}
-
-			Token_init(&t, TOKEN_NAME, begin, l->pos);
-			return t;
-			
-		}
-		else if (type != TOKEN_INVALID)
-		{
-			Token_init(&t, type, NULL, NULL);
+			else
+			{
+				value = 0;
+			}
+			Token_init(&t, type, value);
 			return t;
 		}
 	}
 	while (c != '\0');
-
-	Token_init(&t, TOKEN_EOF, NULL, NULL);
+	Token_init(&t, TOKEN_EOF, 0);
 	return t;
 }
 
@@ -59,10 +52,6 @@ match(char c)
 	case '/':  return TOKEN_SLASH;
 	case '^':  return TOKEN_CARET;
 	case '\0': return TOKEN_EOF;
-	default:
-		if (isalpha(c))
-			return TOKEN_NAME;
-		else
-			return TOKEN_INVALID;
+	default:   return isdigit(c) ? TOKEN_INTEGER : TOKEN_INVALID;
 	}
 }
