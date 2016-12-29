@@ -16,12 +16,12 @@ struct Lexer
 
 // initializes a Lexer
 void
-Lexer_init(struct Lexer* l, const char* source);
+Lexer_init(struct Lexer* this, const char* source);
 
 // gets/generates the next Token from the source string
 // if at the end of the string, the lexer creates an EOF token
 struct Token
-Lexer_next(struct Lexer* l);
+Lexer_next(struct Lexer* this);
 
 #ifdef __cplusplus
 }

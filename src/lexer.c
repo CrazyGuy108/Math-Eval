@@ -2,47 +2,48 @@
 
 // matches the current input against the lexer rules
 static enum TokenType
-match(char c);
+match(char input);
 
 void
-Lexer_init(struct Lexer* l, const char* source)
+Lexer_init(struct Lexer* this, const char* source)
 {
-	l->pos = source;
+	this->pos = source;
 }
 
 struct Token
-Lexer_next(struct Lexer* l)
+Lexer_next(struct Lexer* this)
 {
-	struct Token t;
-	char c;
+	struct Token token;
+	char input;
 	do
 	{
-		c = *l->pos++;
-		enum TokenType type = match(c);
+		input = *this->pos++;
+		enum TokenType type = match(input);
 		if (type != TOKEN_INVALID)
 		{
 			int value;
 			if (type == TOKEN_INTEGER)
 			{
-				value = strtol(l->pos - 1, (char**)&l->pos, 0);
+				value = strtol(this->pos - 1,
+					(char**)&this->pos, 0);
 			}
 			else
 			{
 				value = 0;
 			}
-			Token_init(&t, type, value);
-			return t;
+			Token_init(&token, type, value);
+			return token;
 		}
 	}
-	while (c != '\0');
-	Token_init(&t, TOKEN_EOF, 0);
-	return t;
+	while (input != '\0');
+	Token_init(&token, TOKEN_EOF, 0);
+	return token;
 }
 
 static enum TokenType
-match(char c)
+match(char input)
 {
-	switch (c)
+	switch (input)
 	{
 	case '(':  return TOKEN_LPAREN;
 	case ')':  return TOKEN_RPAREN;
@@ -52,6 +53,6 @@ match(char c)
 	case '/':  return TOKEN_SLASH;
 	case '^':  return TOKEN_CARET;
 	case '\0': return TOKEN_EOF;
-	default:   return isdigit(c) ? TOKEN_INTEGER : TOKEN_INVALID;
+	default:   return isdigit(input) ? TOKEN_INTEGER : TOKEN_INVALID;
 	}
 }

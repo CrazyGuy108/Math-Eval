@@ -1,22 +1,22 @@
 #include "token.h"
 
 void
-Token_init(struct Token* t, enum TokenType type, long int value)
+Token_init(struct Token* this, enum TokenType type, long int value)
 {
-	t->type = type;
-	t->value = value;
+	this->type = type;
+	this->value = value;
 }
 
 enum TokenType
-Token_getType(struct Token* t)
+Token_getType(struct Token* this)
 {
-	return t->type;
+	return this->type;
 }
 
 int
-Token_getValue(struct Token* t)
+Token_getValue(struct Token* this)
 {
-	return t->value;
+	return this->value;
 }
 
 const char*
