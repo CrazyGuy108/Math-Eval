@@ -33,6 +33,19 @@ struct IntExpr
 void
 IntExpr_init(struct IntExpr* this, long int value);
 
+// unary operator expression
+struct UnaryExpr
+{
+	struct Expr super;
+	enum TokenType operator;
+	struct Expr* expr;
+};
+
+// UnaryExpr constructor
+void
+UnaryExpr_init(struct UnaryExpr* this, enum TokenType operator,
+	struct Expr* expr);
+
 // binary operator expression
 struct BinaryExpr
 {

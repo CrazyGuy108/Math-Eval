@@ -14,12 +14,17 @@ static void
 IntExpr_v_dtor(struct IntExpr* this);
 
 static void
+UnaryExpr_v_dtor(struct UnaryExpr* this);
+
+static void
 BinaryExpr_v_dtor(struct BinaryExpr* this);
 
 // vtables
 static const struct Expr_vtable Expr_vtable = { &Expr_v_dtor };
 static const struct Expr_vtable IntExpr_vtable = { (void(*)(struct Expr*))
 	&IntExpr_v_dtor };
+static const struct Expr_vtable UnaryExpr_vtable = { (void(*)(struct Expr*))
+	&UnaryExpr_v_dtor };
 static const struct Expr_vtable BinaryExpr_vtable = { (void(*)(struct Expr*))
 	&BinaryExpr_v_dtor };
 
@@ -44,6 +49,16 @@ IntExpr_init(struct IntExpr* this, long int value)
 }
 
 void
+UnaryExpr_init(struct UnaryExpr* this, enum TokenType operator,
+	struct Expr* expr)
+{
+	Expr_init(&this->super);
+	this->super.vtable = &UnaryExpr_vtable;
+	this->operator = operator;
+	this->expr = expr;
+}
+
+void
 BinaryExpr_init(struct BinaryExpr* this, struct Expr* left,
 	enum TokenType operator, struct Expr* right)
 {
@@ -63,6 +78,17 @@ void
 IntExpr_v_dtor(struct IntExpr* this)
 {
 	Expr_v_dtor(&this->super);
+}
+
+void
+UnaryExpr_v_dtor(struct UnaryExpr* this)
+{
+	Expr_v_dtor(&this->super);
+	if (this->expr != NULL)
+	{
+		Expr_dtor(this->expr);
+		free(this->expr);
+	}
 }
 
 void
