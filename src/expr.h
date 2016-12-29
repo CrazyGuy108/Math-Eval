@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+#include <stdlib.h>
+#include "token.h"
+
 // base class for expressions
 struct Expr
 {
@@ -29,6 +32,20 @@ struct IntExpr
 // IntExpr constructor
 void
 IntExpr_init(struct IntExpr* this, long int value);
+
+// binary operator expression
+struct BinaryExpr
+{
+	struct Expr super;
+	struct Expr* left;
+	enum TokenType operator;
+	struct Expr* right;
+};
+
+// BinaryExpr constructor
+void
+BinaryExpr_init(struct BinaryExpr* this, struct Expr* left,
+	enum TokenType operator, struct Expr* right);
 
 #ifdef __cplusplus
 }
