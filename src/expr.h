@@ -14,24 +14,12 @@ struct Expr
 	const struct Expr_vtable* vtable;
 };
 
-// Expr constructor
-void
-Expr_init(struct Expr* this);
-
-// virtual destructor wrapper for Expr subclasses
-void
-Expr_dtor(struct Expr* this);
-
 // integer expression
 struct IntExpr
 {
 	struct Expr super;
 	long int value;
 };
-
-// IntExpr constructor
-void
-IntExpr_init(struct IntExpr* this, long int value);
 
 // unary operator expression
 struct UnaryExpr
@@ -41,11 +29,6 @@ struct UnaryExpr
 	struct Expr* expr;
 };
 
-// UnaryExpr constructor
-void
-UnaryExpr_init(struct UnaryExpr* this, enum TokenType operator,
-	struct Expr* expr);
-
 // binary operator expression
 struct BinaryExpr
 {
@@ -54,6 +37,23 @@ struct BinaryExpr
 	enum TokenType operator;
 	struct Expr* right;
 };
+
+// Expr constructor
+void
+Expr_init(struct Expr* this);
+
+// virtual destructor wrapper for Expr subclasses
+void
+Expr_dtor(struct Expr* this);
+
+// IntExpr constructor
+void
+IntExpr_init(struct IntExpr* this, long int value);
+
+// UnaryExpr constructor
+void
+UnaryExpr_init(struct UnaryExpr* this, enum TokenType operator,
+	struct Expr* expr);
 
 // BinaryExpr constructor
 void
