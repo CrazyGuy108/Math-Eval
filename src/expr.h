@@ -19,6 +19,17 @@ Expr_init(struct Expr* this);
 void
 Expr_dtor(struct Expr* this);
 
+// integer expression
+struct IntExpr
+{
+	struct Expr super;
+	long int value;
+};
+
+// IntExpr constructor
+void
+IntExpr_init(struct IntExpr* this, long int value);
+
 #ifdef __cplusplus
 }
 #endif
