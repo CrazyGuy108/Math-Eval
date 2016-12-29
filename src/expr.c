@@ -20,7 +20,7 @@ static void
 BinaryExpr_v_dtor(struct BinaryExpr* this);
 
 // vtables
-static const struct Expr_vtable Expr_vtable = { &Expr_v_dtor };
+static const struct Expr_vtable Expr_vtable = { NULL };
 static const struct Expr_vtable IntExpr_vtable = { (void(*)(struct Expr*))
 	&IntExpr_v_dtor };
 static const struct Expr_vtable UnaryExpr_vtable = { (void(*)(struct Expr*))
