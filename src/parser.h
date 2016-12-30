@@ -23,12 +23,19 @@ struct Parser
 	struct Token next;
 };
 
+// convenient typedefs for long function pointers
+typedef void (*Parser_dtor_t)(struct Parser*);
+typedef struct PrefixParselet* (*Parser_prefix_t)(struct Parser*,
+	enum TokenType);
+typedef struct InfixParselet* (*Parser_infix_t)(struct Parser*,
+	enum TokenType);
+
 // main vtable for Parser subclasses
 struct Parser_vtable
 {
-	void (*dtor)(struct Parser*);
-	struct PrefixParselet* (*prefix)(struct Parser*, enum TokenType);
-	struct InfixParselet* (*infix)(struct Parser*, enum TokenType);
+	Parser_dtor_t dtor;
+	Parser_prefix_t prefix;
+	Parser_infix_t infix;
 };
 
 // Parser constructor
