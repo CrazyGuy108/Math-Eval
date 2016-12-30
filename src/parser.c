@@ -4,6 +4,7 @@ void
 Parser_init(struct Parser* this, struct Lexer* lexer)
 {
 	this->lexer = lexer;
+	this->next = Lexer_next(lexer);
 }
 
 struct Expr*
@@ -26,5 +27,13 @@ Parser_freeExpr(struct Expr** expr)
 struct Token
 Parser_consume(struct Parser* this)
 {
-	return Lexer_next(this->lexer);
+	struct Token tmp = this->next;
+	this->next = Lexer_next(this->lexer);
+	return tmp;
+}
+
+const struct Token*
+Parser_peek(const struct Parser* this)
+{
+	return &this->next;
 }

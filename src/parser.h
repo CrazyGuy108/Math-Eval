@@ -14,6 +14,7 @@ extern "C" {
 struct Parser
 {
 	struct Lexer* lexer;
+	struct Token next;
 };
 
 // Parser constructor
@@ -31,6 +32,10 @@ Parser_freeExpr(struct Expr** expr);
 // consumes the next token
 struct Token
 Parser_consume(struct Parser* this);
+
+// peeks at the next token but doesn't consume it
+const struct Token*
+Parser_peek(const struct Parser* this);
 
 #ifdef __cplusplus
 }
