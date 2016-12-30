@@ -21,7 +21,7 @@ enum TokenType
 };
 
 // represents a single immutable lexer token
-// use the provided functions instead of the struct members
+// the value member is for integer types
 struct Token
 {
 	enum TokenType type;

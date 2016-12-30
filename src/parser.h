@@ -9,6 +9,8 @@ extern "C" {
 #include "expr.h"
 #include "lexer.h"
 
+// parses a token stream
+// for now it rips tokens straight off of the lexer
 struct Parser
 {
 	struct Lexer* lexer;

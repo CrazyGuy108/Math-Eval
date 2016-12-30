@@ -11,24 +11,25 @@ extern "C" {
 #include "token.h"
 
 // base class for prefix parselets
+// used for parsing things like parentheses, integers, and unary operators
 struct PrefixParselet
 {
 	const struct PrefixParselet_vtable* vtable;
 };
 
-// parselet for expressions grouped inside parentheses
+// parselet for expressions grouped inside parentheses, like "(a+b)"
 struct GroupParselet
 {
 	struct PrefixParselet super;
 };
 
-// parselet for integers
+// parselet for integers like "1337"
 struct IntParselet
 {
 	struct PrefixParselet super;
 };
 
-// parselet for unary operators
+// parselet for unary operators like "-a"
 struct UnaryParselet
 {
 	struct PrefixParselet super;
@@ -62,12 +63,15 @@ void
 UnaryParselet_init(struct UnaryParselet* this, int precedence);
 
 // base class for infix parselets
+// used for parsing operators that come after the expression it affects
 struct InfixParselet
 {
 	const struct InfixParselet_vtable* vtable;
 };
 
 // parselet for binary operators
+// to spare myself 1000 lines of code, precedence and associativity are members
+// rather than writing a ton of identical subclasses for each binary operator
 struct BinaryParselet
 {
 	struct InfixParselet super;

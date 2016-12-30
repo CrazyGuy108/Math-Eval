@@ -14,14 +14,14 @@ struct Expr
 	const struct Expr_vtable* vtable;
 };
 
-// integer expression
+// integer expression, e.g. "1337"
 struct IntExpr
 {
 	struct Expr super;
 	long int value;
 };
 
-// unary operator expression
+// unary operator expression, e.g. "-a"
 struct UnaryExpr
 {
 	struct Expr super;
@@ -29,7 +29,7 @@ struct UnaryExpr
 	struct Expr* expr;
 };
 
-// binary operator expression
+// binary operator expression, e.g. "a+b"
 struct BinaryExpr
 {
 	struct Expr super;

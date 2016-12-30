@@ -9,6 +9,7 @@ extern "C" {
 #include <stdlib.h>
 #include "token.h"
 
+// generates a stream of Tokens by stepping through the input string
 struct Lexer
 {
 	const char* pos;
