@@ -1,18 +1,17 @@
 #include "parselet.h"
 
-// convenient typedefs for really long function pointers
+// PrefixParselet section
+
 typedef void (*PrefixParselet_dtor_t)(struct PrefixParselet*);
 typedef struct Expr* (*PrefixParselet_parse_t)(struct PrefixParselet*,
 	struct Parser*, const struct Token*);
 
-// main vtable for PrefixParselet subclasses
 struct PrefixParselet_vtable
 {
 	PrefixParselet_dtor_t dtor;
 	PrefixParselet_parse_t parse;
 };
 
-// protected virtual functions
 static void
 PrefixParselet_v_dtor(struct PrefixParselet* this);
 
@@ -55,8 +54,6 @@ const struct PrefixParselet_vtable UnaryParselet_vtable =
 	(PrefixParselet_parse_t)&UnaryParselet_v_parse
 };
 
-// public functions
-
 void
 PrefixParselet_init(struct PrefixParselet* this)
 {
@@ -97,8 +94,6 @@ UnaryParselet_init(struct UnaryParselet* this, int precedence)
 	this->super.vtable = &UnaryParselet_vtable;
 	this->precedence = precedence;
 }
-
-// protected virtual functions
 
 void
 PrefixParselet_v_dtor(struct PrefixParselet* this)
@@ -142,4 +137,98 @@ UnaryParselet_v_parse(struct UnaryParselet* this, struct Parser* parser,
 	const struct Token* token)
 {
 	return NULL; // placeholder
+}
+
+// InfixParselet section
+
+typedef void (*InfixParselet_dtor_t)(struct InfixParselet*);
+typedef struct Expr* (*InfixParselet_parse_t)(struct InfixParselet*,
+	struct Parser*, struct Expr*, const struct Token*);
+typedef int (*InfixParselet_getPrec_t)(struct InfixParselet* this);
+
+struct InfixParselet_vtable
+{
+	InfixParselet_dtor_t dtor;
+	InfixParselet_parse_t parse;
+	InfixParselet_getPrec_t getPrec;
+};
+
+static void
+InfixParselet_v_dtor(struct InfixParselet* this);
+
+static void
+BinaryParselet_v_dtor(struct BinaryParselet* this);
+
+static struct Expr*
+BinaryParselet_v_parse(struct BinaryParselet* this, struct Parser* parser,
+	struct Expr* left, const struct Token* token);
+
+static int
+BinaryParselet_v_getPrec(struct BinaryParselet* this);
+
+const struct InfixParselet_vtable InfixParselet_vtable = { NULL, NULL, NULL };
+const struct InfixParselet_vtable BinaryParselet_vtable =
+{
+	(InfixParselet_dtor_t)&BinaryParselet_v_dtor,
+	(InfixParselet_parse_t)&BinaryParselet_v_parse,
+	(InfixParselet_getPrec_t)&BinaryParselet_v_getPrec
+};
+
+void
+InfixParselet_init(struct InfixParselet* this)
+{
+	this->vtable = &InfixParselet_vtable;
+}
+
+void
+InfixParselet_dtor(struct InfixParselet* this)
+{
+	this->vtable->dtor(this);
+}
+
+struct Expr*
+InfixParselet_parse(struct InfixParselet* this, struct Parser* parser,
+	struct Expr* left, const struct Token* token)
+{
+	return this->vtable->parse(this, parser, left, token);
+}
+
+int
+InfixParselet_getPrec(struct InfixParselet* this)
+{
+	return this->vtable->getPrec(this);
+}
+
+void
+BinaryParselet_init(struct BinaryParselet* this, int precedence,
+	bool associativity)
+{
+	InfixParselet_init(&this->super);
+	this->super.vtable = &BinaryParselet_vtable;
+	this->precedence = precedence;
+	this->associativity = associativity;
+}
+
+void
+InfixParselet_v_dtor(struct InfixParselet* this)
+{
+}
+
+void
+BinaryParselet_v_dtor(struct BinaryParselet* this)
+{
+	InfixParselet_v_dtor(&this->super);
+}
+
+struct Expr*
+BinaryParselet_v_parse(struct BinaryParselet* this, struct Parser* parser,
+	struct Expr* left, const struct Token* token)
+{
+	return NULL; // placeholder
+}
+
+int
+BinaryParselet_v_getPrec(struct BinaryParselet* this)
+{
+	return this->precedence;
 }

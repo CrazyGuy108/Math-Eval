@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include "parser.h"
 #include "token.h"
@@ -59,6 +60,45 @@ IntParselet_init(struct IntParselet* this);
 // UnaryParselet constructor
 void
 UnaryParselet_init(struct UnaryParselet* this, int precedence);
+
+// base class for infix parselets
+struct InfixParselet
+{
+	const struct InfixParselet_vtable* vtable;
+};
+
+// parselet for binary operators
+struct BinaryParselet
+{
+	struct InfixParselet super;
+	int precedence;
+	bool associativity;
+};
+
+// InfixParselet constructor
+void
+InfixParselet_init(struct InfixParselet* this);
+
+// virtual destructor wrapper for InfixParselet subclasses
+void
+InfixParselet_dtor(struct InfixParselet* this);
+
+// virtual function wrapper for InfixParselet subclasses
+// generates an expression using the parser, left operand,
+// and the operator token
+struct Expr*
+InfixParselet_parse(struct InfixParselet* this, struct Parser* parser,
+	struct Expr* left, const struct Token* token);
+
+// virtual function wrapper for InfixParselet subclasses
+// gets the precedence of the operator that the parselet will be parsing
+int
+InfixParselet_getPrec(struct InfixParselet* this);
+
+// BinaryParselet constructor
+void
+BinaryParselet_init(struct BinaryParselet* this, int precedence,
+	bool associativity);
 
 #ifdef __cplusplus
 }
