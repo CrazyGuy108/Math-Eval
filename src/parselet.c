@@ -126,21 +126,42 @@ static struct Expr*
 GroupParselet_v_parse(struct GroupParselet* this, struct Parser* parser,
 	const struct Token* token)
 {
-	return NULL; // placeholder
+	struct Expr* expr = Parser_parseExpr(parser, 0);
+	struct Token rparen = Parser_consume(parser);
+	if (Token_getType(&rparen) != TOKEN_RPAREN)
+	{
+		fprintf(stderr, "error!\n"); // placeholder
+		return NULL;
+	}
+	else
+	{
+		return expr;
+	}
 }
 
 static struct Expr*
 IntParselet_v_parse(struct IntParselet* this, struct Parser* parser,
 	const struct Token* token)
 {
-	return NULL; // placeholder
+	struct IntExpr* expr = malloc(sizeof(struct IntExpr));
+	if (expr != NULL)
+	{
+		IntExpr_init(expr, Token_getValue(token));
+	}
+	return (struct Expr*)expr;
 }
 
 static struct Expr*
 UnaryParselet_v_parse(struct UnaryParselet* this, struct Parser* parser,
 	const struct Token* token)
 {
-	return NULL; // placeholder
+	struct UnaryExpr* expr = malloc(sizeof(struct UnaryExpr));
+	if (expr != NULL)
+	{
+		UnaryExpr_init(expr, Token_getType(token),
+			Parser_parseExpr(parser, this->precedence));
+	}
+	return (struct Expr*)expr;
 }
 
 // InfixParselet section
@@ -233,7 +254,14 @@ struct Expr*
 BinaryParselet_v_parse(struct BinaryParselet* this, struct Parser* parser,
 	struct Expr* left, const struct Token* token)
 {
-	return NULL; // placeholder
+	struct BinaryExpr* expr = malloc(sizeof(struct BinaryExpr));
+	if (expr != NULL)
+	{
+		BinaryExpr_init(expr, left, Token_getType(token),
+			Parser_parseExpr(parser, this->precedence -
+				(this->associativity ? 1 : 0)));
+	}
+	return (struct Expr*)expr;
 }
 
 int
