@@ -1,7 +1,10 @@
-CFILES = $(SRC)/*.c
-EXE = $(BIN)/math-eval.exe
-SRC = src
-BIN = bin
+ALL_SRCS = $(wildcard $(SRC)/*.c)
+SRCS     = $(filter-out $(SRC)/main.c, $(ALL_SRCS))
+SRC      = src
+TESTS    = tests
+BIN      = bin
 
-all: $(CFILES)
-	gcc -Wall -std=c11 $(CFILES) -o $(EXE)
+all: $(ALL_SRCS)
+	gcc -Wall -std=c11 $(ALL_SRCS) -o $(BIN)/math-eval.exe
+lexer-test: $(SRCS) $(TESTS)/lexer-test.c
+	gcc -Wall -std=c11 -g $(SRCS) $(TESTS)/lexer-test.c -o $(BIN)/lexer-test.exe
