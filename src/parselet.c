@@ -37,18 +37,22 @@ UnaryParselet_v_parse(struct UnaryParselet* this, struct Parser* parser,
 	const struct Token* token);
 
 // vtables
-const struct PrefixParselet_vtable PrefixParselet_vtable = { NULL, NULL };
-const struct PrefixParselet_vtable GroupParselet_vtable =
+static const struct PrefixParselet_vtable PrefixParselet_vtable =
+{
+	NULL,
+	NULL
+};
+static const struct PrefixParselet_vtable GroupParselet_vtable =
 {
 	(PrefixParselet_dtor_t)&GroupParselet_v_dtor,
 	(PrefixParselet_parse_t)&GroupParselet_v_parse
 };
-const struct PrefixParselet_vtable IntParselet_vtable =
+static const struct PrefixParselet_vtable IntParselet_vtable =
 {
 	(PrefixParselet_dtor_t)&IntParselet_v_dtor,
 	(PrefixParselet_parse_t)&IntParselet_v_parse
 };
-const struct PrefixParselet_vtable UnaryParselet_vtable =
+static const struct PrefixParselet_vtable UnaryParselet_vtable =
 {
 	(PrefixParselet_dtor_t)&UnaryParselet_v_dtor,
 	(PrefixParselet_parse_t)&UnaryParselet_v_parse
@@ -166,8 +170,13 @@ BinaryParselet_v_parse(struct BinaryParselet* this, struct Parser* parser,
 static int
 BinaryParselet_v_getPrec(struct BinaryParselet* this);
 
-const struct InfixParselet_vtable InfixParselet_vtable = { NULL, NULL, NULL };
-const struct InfixParselet_vtable BinaryParselet_vtable =
+static const struct InfixParselet_vtable InfixParselet_vtable =
+{
+	NULL,
+	NULL,
+	NULL
+};
+static const struct InfixParselet_vtable BinaryParselet_vtable =
 {
 	(InfixParselet_dtor_t)&BinaryParselet_v_dtor,
 	(InfixParselet_parse_t)&BinaryParselet_v_parse,
