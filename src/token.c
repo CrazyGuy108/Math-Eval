@@ -8,13 +8,13 @@ Token_init(struct Token* this, enum TokenType type, long int value)
 }
 
 enum TokenType
-Token_getType(struct Token* this)
+Token_getType(const struct Token* this)
 {
 	return this->type;
 }
 
 int
-Token_getValue(struct Token* this)
+Token_getValue(const struct Token* this)
 {
 	return this->value;
 }

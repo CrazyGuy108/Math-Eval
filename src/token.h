@@ -34,11 +34,11 @@ Token_init(struct Token* this, enum TokenType type, long int value);
 
 // getter for type
 enum TokenType
-Token_getType(struct Token* this);
+Token_getType(const struct Token* this);
 
 // getter for value
 int
-Token_getValue(struct Token* this);
+Token_getValue(const struct Token* this);
 
 // converts a TokenType to a string
 const char*
