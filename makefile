@@ -1,4 +1,4 @@
-CFILES = $(SRC)/token.c $(SRC)/lexer.c $(SRC)/expr.c $(SRC)/parselet.c $(SRC)/parser.c $(SRC)/main.c
+CFILES = $(SRC)/*.c
 EXE = $(BIN)/math-eval.exe
 SRC = src
 BIN = bin
