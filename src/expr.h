@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "token.h"
 
@@ -45,6 +46,11 @@ Expr_init(struct Expr* this);
 // virtual destructor wrapper for Expr subclasses
 void
 Expr_dtor(struct Expr* this);
+
+// virtual function wrapper for Expr subclasses
+// prints the expression to the specified output stream
+void
+Expr_fprint(struct Expr* this, FILE* stream);
 
 // IntExpr constructor
 void

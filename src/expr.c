@@ -1,12 +1,15 @@
 #include "expr.h"
 
+typedef void (*Expr_dtor_t)(struct Expr*);
+typedef void (*Expr_fprint_t)(struct Expr*, FILE*);
+
 // main vtable for Expr subclasses
 struct Expr_vtable
 {
-	void (*dtor)(struct Expr*);
+	Expr_dtor_t dtor;
+	Expr_fprint_t fprint;
 };
 
-// destructors
 static void
 Expr_v_dtor(struct Expr* this);
 
@@ -19,14 +22,36 @@ UnaryExpr_v_dtor(struct UnaryExpr* this);
 static void
 BinaryExpr_v_dtor(struct BinaryExpr* this);
 
+static void
+IntExpr_v_fprint(struct IntExpr* this, FILE* stream);
+
+static void
+UnaryExpr_v_fprint(struct UnaryExpr* this, FILE* stream);
+
+static void
+BinaryExpr_v_fprint(struct BinaryExpr* this, FILE* stream);
+
 // vtables
-static const struct Expr_vtable Expr_vtable = { NULL };
-static const struct Expr_vtable IntExpr_vtable = { (void(*)(struct Expr*))
-	&IntExpr_v_dtor };
-static const struct Expr_vtable UnaryExpr_vtable = { (void(*)(struct Expr*))
-	&UnaryExpr_v_dtor };
-static const struct Expr_vtable BinaryExpr_vtable = { (void(*)(struct Expr*))
-	&BinaryExpr_v_dtor };
+static const struct Expr_vtable Expr_vtable = \
+{
+	NULL,
+	NULL
+};
+static const struct Expr_vtable IntExpr_vtable =
+{
+	(Expr_dtor_t)&IntExpr_v_dtor,
+	(Expr_fprint_t)&IntExpr_v_fprint
+};
+static const struct Expr_vtable UnaryExpr_vtable =
+{
+	(Expr_dtor_t)&UnaryExpr_v_dtor,
+	(Expr_fprint_t)&UnaryExpr_v_fprint
+};
+static const struct Expr_vtable BinaryExpr_vtable =
+{
+	(Expr_dtor_t)&BinaryExpr_v_dtor,
+	(Expr_fprint_t)&BinaryExpr_v_fprint
+};
 
 void
 Expr_init(struct Expr* this)
@@ -38,6 +63,12 @@ void
 Expr_dtor(struct Expr* this)
 {
 	this->vtable->dtor(this);
+}
+
+void
+Expr_fprint(struct Expr* this, FILE* stream)
+{
+	this->vtable->fprint(this, stream);
 }
 
 void
@@ -105,4 +136,28 @@ BinaryExpr_v_dtor(struct BinaryExpr* this)
 		Expr_dtor(this->right);
 		free(this->right);
 	}
+}
+
+void
+IntExpr_v_fprint(struct IntExpr* this, FILE* stream)
+{
+	fprintf(stream, "(int %ld)", this->value);
+}
+
+void
+UnaryExpr_v_fprint(struct UnaryExpr* this, FILE* stream)
+{
+	fprintf(stream, "(%s ", TokenType_toString(this->operator));
+	Expr_fprint(this->expr, stream);
+	fprintf(stream, ")");
+}
+
+void
+BinaryExpr_v_fprint(struct BinaryExpr* this, FILE* stream)
+{
+	fprintf(stream, "(%s ", TokenType_toString(this->operator));
+	Expr_fprint(this->left, stream);
+	fprintf(stream, " ");
+	Expr_fprint(this->right, stream);
+	fprintf(stream, ")");
 }
