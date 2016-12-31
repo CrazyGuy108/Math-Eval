@@ -1,12 +1,14 @@
 #include "expr.h"
 
 typedef void (*Expr_dtor_t)(struct Expr*);
+typedef long int (*Expr_eval_t)(const struct Expr*);
 typedef void (*Expr_fprint_t)(struct Expr*, FILE*);
 
 // main vtable for Expr subclasses
 struct Expr_vtable
 {
 	Expr_dtor_t dtor;
+	Expr_eval_t eval;
 	Expr_fprint_t fprint;
 };
 
@@ -22,6 +24,15 @@ UnaryExpr_v_dtor(struct UnaryExpr* this);
 static void
 BinaryExpr_v_dtor(struct BinaryExpr* this);
 
+static long int
+IntExpr_v_eval(const struct IntExpr* this);
+
+static long int
+UnaryExpr_v_eval(const struct UnaryExpr* this);
+
+static long int
+BinaryExpr_v_eval(const struct BinaryExpr* this);
+
 static void
 IntExpr_v_fprint(struct IntExpr* this, FILE* stream);
 
@@ -35,21 +46,25 @@ BinaryExpr_v_fprint(struct BinaryExpr* this, FILE* stream);
 static const struct Expr_vtable Expr_vtable = \
 {
 	NULL,
+	NULL,
 	NULL
 };
 static const struct Expr_vtable IntExpr_vtable =
 {
 	(Expr_dtor_t)&IntExpr_v_dtor,
+	(Expr_eval_t)&IntExpr_v_eval,
 	(Expr_fprint_t)&IntExpr_v_fprint
 };
 static const struct Expr_vtable UnaryExpr_vtable =
 {
 	(Expr_dtor_t)&UnaryExpr_v_dtor,
+	(Expr_eval_t)&UnaryExpr_v_eval,
 	(Expr_fprint_t)&UnaryExpr_v_fprint
 };
 static const struct Expr_vtable BinaryExpr_vtable =
 {
 	(Expr_dtor_t)&BinaryExpr_v_dtor,
+	(Expr_eval_t)&BinaryExpr_v_eval,
 	(Expr_fprint_t)&BinaryExpr_v_fprint
 };
 
@@ -63,6 +78,12 @@ void
 Expr_dtor(struct Expr* this)
 {
 	this->vtable->dtor(this);
+}
+
+long int
+Expr_eval(const struct Expr* this)
+{
+	return this->vtable->eval(this);
 }
 
 void
@@ -135,6 +156,40 @@ BinaryExpr_v_dtor(struct BinaryExpr* this)
 	{
 		Expr_dtor(this->right);
 		free(this->right);
+	}
+}
+
+long int
+IntExpr_v_eval(const struct IntExpr* this)
+{
+	return this->value;
+}
+
+long int
+UnaryExpr_v_eval(const struct UnaryExpr* this)
+{
+	long int expr = Expr_eval(this->expr);
+	switch (this->operator)
+	{
+	case TOKEN_PLUS:  return expr;
+	case TOKEN_MINUS: return -expr;
+	default:          return 0;
+	}
+}
+
+long int
+BinaryExpr_v_eval(const struct BinaryExpr* this)
+{
+	long int left = Expr_eval(this->left);
+	long int right = Expr_eval(this->right);
+	switch (this->operator)
+	{
+	case TOKEN_CARET:    return pow((double)left, (double)right);
+	case TOKEN_ASTERISK: return left * right;
+	case TOKEN_SLASH:    return left / right;
+	case TOKEN_PLUS:     return left + right;
+	case TOKEN_MINUS:    return left - right;
+	default:             return 0;
 	}
 }
 

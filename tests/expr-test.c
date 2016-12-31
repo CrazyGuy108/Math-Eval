@@ -17,7 +17,7 @@ main()
 	BinaryExpr_init(expr, (struct Expr*)expr1, TOKEN_PLUS,
 		(struct Expr*)expr3);
 
-	Expr_fprint((struct Expr*)expr, stdout);
+	printf("%d\n", Expr_eval((struct Expr*)expr));
 
 	Expr_dtor((struct Expr*)expr);
 	free(expr);
