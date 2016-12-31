@@ -2,7 +2,7 @@
 
 typedef void (*Expr_dtor_t)(struct Expr*);
 typedef long int (*Expr_eval_t)(const struct Expr*);
-typedef void (*Expr_fprint_t)(struct Expr*, FILE*);
+typedef void (*Expr_fprint_t)(const struct Expr*, FILE*);
 
 // main vtable for Expr subclasses
 struct Expr_vtable
@@ -34,16 +34,16 @@ static long int
 BinaryExpr_v_eval(const struct BinaryExpr* this);
 
 static void
-IntExpr_v_fprint(struct IntExpr* this, FILE* stream);
+IntExpr_v_fprint(const struct IntExpr* this, FILE* stream);
 
 static void
-UnaryExpr_v_fprint(struct UnaryExpr* this, FILE* stream);
+UnaryExpr_v_fprint(const struct UnaryExpr* this, FILE* stream);
 
 static void
-BinaryExpr_v_fprint(struct BinaryExpr* this, FILE* stream);
+BinaryExpr_v_fprint(const struct BinaryExpr* this, FILE* stream);
 
 // vtables
-static const struct Expr_vtable Expr_vtable = \
+static const struct Expr_vtable Expr_vtable =
 {
 	NULL,
 	NULL,
@@ -87,7 +87,7 @@ Expr_eval(const struct Expr* this)
 }
 
 void
-Expr_fprint(struct Expr* this, FILE* stream)
+Expr_fprint(const struct Expr* this, FILE* stream)
 {
 	this->vtable->fprint(this, stream);
 }
@@ -194,13 +194,13 @@ BinaryExpr_v_eval(const struct BinaryExpr* this)
 }
 
 void
-IntExpr_v_fprint(struct IntExpr* this, FILE* stream)
+IntExpr_v_fprint(const struct IntExpr* this, FILE* stream)
 {
 	fprintf(stream, "(int %ld)", this->value);
 }
 
 void
-UnaryExpr_v_fprint(struct UnaryExpr* this, FILE* stream)
+UnaryExpr_v_fprint(const struct UnaryExpr* this, FILE* stream)
 {
 	fprintf(stream, "(%s ", TokenType_toString(this->operator));
 	Expr_fprint(this->expr, stream);
@@ -208,7 +208,7 @@ UnaryExpr_v_fprint(struct UnaryExpr* this, FILE* stream)
 }
 
 void
-BinaryExpr_v_fprint(struct BinaryExpr* this, FILE* stream)
+BinaryExpr_v_fprint(const struct BinaryExpr* this, FILE* stream)
 {
 	fprintf(stream, "(%s ", TokenType_toString(this->operator));
 	Expr_fprint(this->left, stream);

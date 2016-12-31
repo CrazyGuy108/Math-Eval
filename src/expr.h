@@ -56,7 +56,7 @@ Expr_eval(const struct Expr* this);
 // virtual function wrapper for Expr subclasses
 // prints the expression to the specified output stream
 void
-Expr_fprint(struct Expr* this, FILE* stream);
+Expr_fprint(const struct Expr* this, FILE* stream);
 
 // IntExpr constructor
 void
