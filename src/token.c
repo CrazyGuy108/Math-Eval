@@ -1,7 +1,7 @@
 #include "token.h"
 
 void
-Token_init(struct Token* this, enum TokenType type, long int value)
+Token_init(struct Token* this, enum TokenType type, int value)
 {
 	this->type = type;
 	this->value = value;

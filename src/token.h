@@ -25,12 +25,12 @@ enum TokenType
 struct Token
 {
 	enum TokenType type;
-	long int value;
+	int value;
 };
 
-// initializes a Token
+// Token constructor
 void
-Token_init(struct Token* this, enum TokenType type, long int value);
+Token_init(struct Token* this, enum TokenType type, int value);
 
 // getter for type
 enum TokenType

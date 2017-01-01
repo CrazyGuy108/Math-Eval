@@ -20,7 +20,7 @@ struct Expr
 struct IntExpr
 {
 	struct Expr super;
-	long int value;
+	int value;
 };
 
 // unary operator expression, e.g. "-a"
@@ -50,7 +50,7 @@ Expr_dtor(struct Expr* this);
 
 // virtual function wrapper for Expr subclasses
 // evaluates the expression and returns its value
-long int
+int
 Expr_eval(const struct Expr* this);
 
 // virtual function wrapper for Expr subclasses
@@ -60,7 +60,7 @@ Expr_fprint(const struct Expr* this, FILE* stream);
 
 // IntExpr constructor
 void
-IntExpr_init(struct IntExpr* this, long int value);
+IntExpr_init(struct IntExpr* this, int value);
 
 // UnaryExpr constructor
 void

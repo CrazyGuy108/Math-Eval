@@ -1,7 +1,7 @@
 #include "expr.h"
 
 typedef void (*Expr_dtor_t)(struct Expr*);
-typedef long int (*Expr_eval_t)(const struct Expr*);
+typedef int (*Expr_eval_t)(const struct Expr*);
 typedef void (*Expr_fprint_t)(const struct Expr*, FILE*);
 
 // main vtable for Expr subclasses
@@ -24,13 +24,13 @@ UnaryExpr_v_dtor(struct UnaryExpr* this);
 static void
 BinaryExpr_v_dtor(struct BinaryExpr* this);
 
-static long int
+static int
 IntExpr_v_eval(const struct IntExpr* this);
 
-static long int
+static int
 UnaryExpr_v_eval(const struct UnaryExpr* this);
 
-static long int
+static int
 BinaryExpr_v_eval(const struct BinaryExpr* this);
 
 static void
@@ -80,7 +80,7 @@ Expr_dtor(struct Expr* this)
 	this->vtable->dtor(this);
 }
 
-long int
+int
 Expr_eval(const struct Expr* this)
 {
 	return this->vtable->eval(this);
@@ -93,7 +93,7 @@ Expr_fprint(const struct Expr* this, FILE* stream)
 }
 
 void
-IntExpr_init(struct IntExpr* this, long int value)
+IntExpr_init(struct IntExpr* this, int value)
 {
 	Expr_init(&this->super);
 	this->super.vtable = &IntExpr_vtable;
@@ -159,16 +159,16 @@ BinaryExpr_v_dtor(struct BinaryExpr* this)
 	}
 }
 
-long int
+int
 IntExpr_v_eval(const struct IntExpr* this)
 {
 	return this->value;
 }
 
-long int
+int
 UnaryExpr_v_eval(const struct UnaryExpr* this)
 {
-	long int expr = Expr_eval(this->expr);
+	int expr = Expr_eval(this->expr);
 	switch (this->operator)
 	{
 	case TOKEN_PLUS:  return expr;
@@ -177,11 +177,11 @@ UnaryExpr_v_eval(const struct UnaryExpr* this)
 	}
 }
 
-long int
+int
 BinaryExpr_v_eval(const struct BinaryExpr* this)
 {
-	long int left = Expr_eval(this->left);
-	long int right = Expr_eval(this->right);
+	int left = Expr_eval(this->left);
+	int right = Expr_eval(this->right);
 	switch (this->operator)
 	{
 	case TOKEN_CARET:    return pow((double)left, (double)right);
