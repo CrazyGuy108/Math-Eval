@@ -2,10 +2,10 @@
 #define EXPR_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "token.h"
@@ -40,6 +40,12 @@ struct BinaryExpr
 	struct Expr* right;
 };
 
+// an expression that doesn't mean anything
+struct NullExpr
+{
+	struct Expr super;
+}
+
 // Expr constructor
 void
 Expr_init(struct Expr* this);
@@ -71,6 +77,10 @@ UnaryExpr_init(struct UnaryExpr* this, enum TokenType operator,
 void
 BinaryExpr_init(struct BinaryExpr* this, struct Expr* left,
 	enum TokenType operator, struct Expr* right);
+
+// NullExpr constructor
+void
+NullExpr_init(struct NullExpr* this);
 
 #ifdef __cplusplus
 }

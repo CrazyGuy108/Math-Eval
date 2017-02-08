@@ -1,3 +1,4 @@
+#include <math.h>
 #include "expr.h"
 
 typedef void (*Expr_dtor_t)(struct Expr*);
@@ -24,6 +25,9 @@ UnaryExpr_v_dtor(struct UnaryExpr* this);
 static void
 BinaryExpr_v_dtor(struct BinaryExpr* this);
 
+static void
+NullExpr_v_dtor(struct NullExpr* this);
+
 static int
 IntExpr_v_eval(const struct IntExpr* this);
 
@@ -33,6 +37,9 @@ UnaryExpr_v_eval(const struct UnaryExpr* this);
 static int
 BinaryExpr_v_eval(const struct BinaryExpr* this);
 
+static int
+NullExpr_v_eval(const struct NullExpr* this);
+
 static void
 IntExpr_v_fprint(const struct IntExpr* this, FILE* stream);
 
@@ -41,6 +48,9 @@ UnaryExpr_v_fprint(const struct UnaryExpr* this, FILE* stream);
 
 static void
 BinaryExpr_v_fprint(const struct BinaryExpr* this, FILE* stream);
+
+static void
+NullExpr_v_fprint(const struct NullExpr* this, FILE* stream);
 
 // vtables
 static const struct Expr_vtable Expr_vtable =
@@ -66,6 +76,13 @@ static const struct Expr_vtable BinaryExpr_vtable =
 	(Expr_dtor_t)&BinaryExpr_v_dtor,
 	(Expr_eval_t)&BinaryExpr_v_eval,
 	(Expr_fprint_t)&BinaryExpr_v_fprint
+};
+
+static const struct Expr_vtable NullExpr_vtable =
+{
+	(Expr_dtor_t)&NullExpr_v_dtor,
+	(Expr_eval_t)&NullExpr_v_eval,
+	(Expr_fprint_t)&NullExpr_v_fprint
 };
 
 void
@@ -122,6 +139,13 @@ BinaryExpr_init(struct BinaryExpr* this, struct Expr* left,
 }
 
 void
+NullExpr_init(struct NullExpr* this)
+{
+	Expr_init(&this->super);
+	this->super.vtable = &NullExpr_vtable;
+}
+
+void
 Expr_v_dtor(struct Expr* this)
 {
 }
@@ -159,6 +183,12 @@ BinaryExpr_v_dtor(struct BinaryExpr* this)
 	}
 }
 
+void
+NullExpr_v_dtor(struct NullExpr* this)
+{
+	Expr_v_dtor(&this->super);
+}
+
 int
 IntExpr_v_eval(const struct IntExpr* this)
 {
@@ -193,6 +223,12 @@ BinaryExpr_v_eval(const struct BinaryExpr* this)
 	}
 }
 
+int
+NullExpr_v_eval(const struct NullExpr* this)
+{
+	return 0;
+}
+
 void
 IntExpr_v_fprint(const struct IntExpr* this, FILE* stream)
 {
@@ -215,4 +251,10 @@ BinaryExpr_v_fprint(const struct BinaryExpr* this, FILE* stream)
 	fprintf(stream, " ");
 	Expr_fprint(this->right, stream);
 	fprintf(stream, ")");
+}
+
+void
+NullExpr_v_fprint(const struct NullExpr* this, FILE* stream)
+{
+	fprintf(stream, "null");
 }
