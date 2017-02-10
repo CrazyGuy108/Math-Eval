@@ -1,59 +1,23 @@
 #include "parser.h"
 
-// gets the precedence of the next InfixParselet
-static inline int
-Parser_getPrec(struct Parser* this);
-
 void
 Parser_init(struct Parser* this, struct Lexer* lexer)
 {
-	this->vtable = &Parser_vtable;
 	this->lexer = lexer;
 	this->next = Lexer_next(lexer);
 }
 
-void
-Parser_dtor(struct Parser* this)
-{
-	this->vtable->dtor(this);
-}
-
-struct PrefixParselet*
-Parser_prefix(struct Parser* this, enum TokenType type)
-{
-	return this->vtable->prefix(this, type);
-}
-
-struct InfixParselet*
-Parser_infix(struct Parser* this, enum TokenType type)
-{
-	return this->vtable->infix(this, type);
-}
-
 struct Expr*
-Parser_parseExpr(struct Parser* this, size_t precedence)
+Parser_parseExpr(struct Parser* this, size_t rbp)
 {
-	struct Token token = Parser_consume(this);
-	struct PrefixParselet* prefix = Parser_prefix(this,
-		Token_getType(&token));
-	if (prefix != NULL)
+	struct Token t = Parser_consume(this);
+	struct Expr* left = Token_nud(&t, this);
+	while (rbp < Token_lbp(Parser_peek(this)))
 	{
-		struct Expr* left = PrefixParselet_parse(prefix, this, &token);
-		while (precedence < Parser_getPrec(this))
-		{
-			token = Parser_consume(this);
-			struct InfixParselet* infix = Parser_infix(this,
-				Token_getType(&token));
-			left = InfixParselet_parse(infix, this, left, &token);
-		}
-
-		return left;
+		t = Parser_consume(this);
+		left = Token_led(&t, this, left);
 	}
-	else
-	{
-		fprintf(stderr, "error!\n"); // placeholder
-		return NULL;
-	}
+	return left;
 }
 
 void
@@ -79,19 +43,4 @@ const struct Token*
 Parser_peek(const struct Parser* this)
 {
 	return &this->next;
-}
-
-void
-Parser_v_dtor(struct Parser* this)
-{
-}
-
-const struct Parser_vtable Parser_vtable = { NULL, NULL, NULL };
-
-int
-Parser_getPrec(struct Parser* this)
-{
-	struct InfixParselet* infix = Parser_infix(this,
-		Token_getType(Parser_peek(this)));
-	return infix != NULL ? InfixParselet_getPrec(infix) : 0;
 }

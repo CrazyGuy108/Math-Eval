@@ -7,59 +7,29 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "expr.h"
-#include "lexer.h"
 
-// forward-declare Parser so parselet.h knows about it
 struct Parser;
 
-#include "parselet.h"
+#include "expr.h"
+#include "lexer.h"
 
 // parses a token stream
 // for now it rips tokens straight off of the lexer
 struct Parser
 {
-	const struct Parser_vtable* vtable;
 	struct Lexer* lexer;
 	struct Token next;
-};
-
-// convenient typedefs for long function pointers
-typedef void (*Parser_dtor_t)(struct Parser*);
-typedef struct PrefixParselet* (*Parser_prefix_t)(struct Parser*,
-	enum TokenType);
-typedef struct InfixParselet* (*Parser_infix_t)(struct Parser*,
-	enum TokenType);
-
-// main vtable for Parser subclasses
-struct Parser_vtable
-{
-	Parser_dtor_t dtor;
-	Parser_prefix_t prefix;
-	Parser_infix_t infix;
 };
 
 // Parser constructor
 void
 Parser_init(struct Parser* this, struct Lexer* lexer);
 
-// virtual destructor wrapper for Parser subclasses
-void
-Parser_dtor(struct Parser* this);
-
-// virtual member function wrapper for Parser subclasses
-// creates/gets a PrefixParselet based on the TokenType
-struct PrefixParselet*
-Parser_prefix(struct Parser* this, enum TokenType type);
-
-// virtual member function wrapper for Parser subclasses
-// creates/gets an InfixParselet based on the TokenType
-struct InfixParselet*
-Parser_infix(struct Parser* this, enum TokenType type);
-
-// generates an expression of a precedence not lower than what was given
+// parses an expression using the right binding power (rbp)
+// this tells us how closely an expression on the right side of an operator
+//  binds to that operator
 struct Expr*
-Parser_parseExpr(struct Parser* this, size_t precedence);
+Parser_parseExpr(struct Parser* this, size_t rbp);
 
 // destroys an expression created by Parser_parseExpr
 void
@@ -72,13 +42,6 @@ Parser_consume(struct Parser* this);
 // peeks at the next token but doesn't consume it
 const struct Token*
 Parser_peek(const struct Parser* this);
-
-// main Parser destructor
-// all subclass destructors should call this
-void
-Parser_v_dtor(struct Parser* this);
-
-extern const struct Parser_vtable Parser_vtable;
 
 #ifdef __cplusplus
 }

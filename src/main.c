@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "mathparser.h"
+#include "parser.h"
 
 int
 main()
@@ -17,9 +17,9 @@ main()
 		fseek(stdin, 0, SEEK_END);
 
 		struct Lexer lexer;
-		struct MathParser parser;
+		struct Parser parser;
 		Lexer_init(&lexer, input);
-		MathParser_init(&parser, &lexer);
+		Parser_init(&parser, &lexer);
 		struct Expr* expr =
 			Parser_parseExpr((struct Parser*)&parser, 0);
 		printf("%d\n", Expr_eval(expr));
