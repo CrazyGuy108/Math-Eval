@@ -44,7 +44,7 @@ struct BinaryExpr
 struct NullExpr
 {
 	struct Expr super;
-}
+};
 
 // Expr constructor
 void
