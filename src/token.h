@@ -23,9 +23,27 @@ enum TokenType
 	TOKEN_INVALID
 };
 
+// left/right binding power of a token
+// if rbp is omitted, it's assumed to be the same as the lbp
+enum BindingPower
+{
+	LBP_LPAREN   = 0,
+	LBP_RPAREN   = 0,
+	LBP_PLUS     = 1,
+	LBP_MINUS    = 1,
+	LBP_ASTERISK = 2,
+	LBP_SLASH    = 2,
+	LBP_CARET    = 3,
+	RBP_CARET    = 2, // right-associative
+	LBP_INTEGER  = 0,
+	LBP_EOF      = 0,
+	LBP_INVALID  = 0
+};
+
 // a single lexer token
 struct Token
 {
+	enum BindingPower lbp;
 	enum TokenType type;
 	int value;
 	size_t pos;
@@ -57,7 +75,7 @@ Token_led(const struct Token* this, struct Parser* parser, struct Expr* left);
 // gets the left binding power (lbp) of a token
 // this tells us how closely the token on the left side of an operator binds to
 //  that operator
-int
+enum BindingPower
 Token_lbp(const struct Token* this);
 
 // gets the type of a token

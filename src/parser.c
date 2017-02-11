@@ -9,7 +9,7 @@ Parser_init(struct Parser* this, struct Lexer* lexer)
 }
 
 struct Expr*
-Parser_parse(struct Parser* this, size_t rbp)
+Parser_parse(struct Parser* this, enum BindingPower rbp)
 {
 	struct Token t = Parser_consume(this);
 	struct Expr* left = Token_nud(&t, this);

@@ -25,6 +25,38 @@ void
 Token_init(struct Token* this, enum TokenType type, int value, size_t pos)
 {
 	this->type = type;
+	switch (this->type)
+	{
+	case TOKEN_LPAREN:
+		this->lbp = LBP_LPAREN;
+		break;
+	case TOKEN_RPAREN:
+		this->lbp = LBP_RPAREN;
+		break;
+	case TOKEN_PLUS:
+		this->lbp = LBP_PLUS;
+		break;
+	case TOKEN_MINUS:
+		this->lbp = LBP_MINUS;
+		break;
+	case TOKEN_ASTERISK:
+		this->lbp = LBP_ASTERISK;
+		break;
+	case TOKEN_SLASH:
+		this->lbp = LBP_SLASH;
+		break;
+	case TOKEN_CARET:
+		this->lbp = LBP_CARET;
+		break;
+	case TOKEN_INTEGER:
+		this->lbp = LBP_INTEGER;
+		break;
+	case TOKEN_EOF:
+		this->lbp = LBP_EOF;
+		break;
+	default:
+		this->lbp = LBP_INVALID;
+	}
 	this->value = value;
 	this->pos = pos;
 }
@@ -98,12 +130,21 @@ Token_led(const struct Token* this, struct Parser* parser, struct Expr* left)
 	case TOKEN_MINUS:
 	case TOKEN_ASTERISK:
 	case TOKEN_SLASH:
+		expr = malloc(sizeof(struct BinaryExpr));
+		if (expr != NULL)
+		{
+			BinaryExpr_init((struct BinaryExpr*)expr, left,
+				this->type, Parser_parse(parser,
+					this->lbp));
+		}
+		break;
 	case TOKEN_CARET:
 		expr = malloc(sizeof(struct BinaryExpr));
 		if (expr != NULL)
 		{
 			BinaryExpr_init((struct BinaryExpr*)expr, left,
-				this->type, Parser_parse(parser, 2));
+				this->type, Parser_parse(parser,
+					RBP_CARET));
 		}
 		break;
 	case TOKEN_INTEGER:
@@ -120,22 +161,10 @@ Token_led(const struct Token* this, struct Parser* parser, struct Expr* left)
 	return expr;
 }
 
-int
+enum BindingPower
 Token_lbp(const struct Token* this)
 {
-	switch (this->type)
-	{
-	case TOKEN_LPAREN:   return 0;
-	case TOKEN_RPAREN:   return 0;
-	case TOKEN_PLUS:     return 1;
-	case TOKEN_MINUS:    return 1;
-	case TOKEN_ASTERISK: return 2;
-	case TOKEN_SLASH:    return 2;
-	case TOKEN_CARET:    return 3;
-	case TOKEN_INTEGER:  return 0;
-	case TOKEN_EOF:      return 0;
-	default:             return 0;
-	}
+	return this->lbp;
 }
 
 enum TokenType

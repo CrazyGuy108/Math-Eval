@@ -29,7 +29,7 @@ Parser_init(struct Parser* this, struct Lexer* lexer);
 // this tells us how closely an expression on the right side of an operator
 //  binds to that operator
 struct Expr*
-Parser_parse(struct Parser* this, size_t rbp);
+Parser_parse(struct Parser* this, enum BindingPower rbp);
 
 // destroys an expression created by Parser_parse
 void
