@@ -8,7 +8,7 @@ Parser_init(struct Parser* this, struct Lexer* lexer)
 }
 
 struct Expr*
-Parser_parseExpr(struct Parser* this, size_t rbp)
+Parser_parse(struct Parser* this, size_t rbp)
 {
 	struct Token t = Parser_consume(this);
 	struct Expr* left = Token_nud(&t, this);
@@ -21,7 +21,7 @@ Parser_parseExpr(struct Parser* this, size_t rbp)
 }
 
 void
-Parser_freeExpr(struct Expr** expr)
+Parser_free(struct Expr** expr)
 {
 	if (expr != NULL && *expr != NULL)
 	{

@@ -21,8 +21,8 @@ main()
 		Lexer_init(&lexer, input);
 		Parser_init(&parser, &lexer);
 		struct Expr* expr =
-			Parser_parseExpr((struct Parser*)&parser, 0);
+			Parser_parse((struct Parser*)&parser, 0);
 		printf("%d\n", Expr_eval(expr));
-		Parser_freeExpr(&expr);
+		Parser_free(&expr);
 	}
 }

@@ -2,7 +2,8 @@
 #define PARSER_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <stdio.h>
@@ -29,11 +30,11 @@ Parser_init(struct Parser* this, struct Lexer* lexer);
 // this tells us how closely an expression on the right side of an operator
 //  binds to that operator
 struct Expr*
-Parser_parseExpr(struct Parser* this, size_t rbp);
+Parser_parse(struct Parser* this, size_t rbp);
 
-// destroys an expression created by Parser_parseExpr
+// destroys an expression created by Parser_parse
 void
-Parser_freeExpr(struct Expr** expr);
+Parser_free(struct Expr** expr);
 
 // consumes the next token
 struct Token
