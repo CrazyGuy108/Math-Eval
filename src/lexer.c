@@ -1,5 +1,10 @@
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
 #include "lexer.h"
+
+static int
+Lexer_parseInt(struct Lexer* this);
 
 // matches the current input against the lexer rules
 static enum TokenType
@@ -28,8 +33,7 @@ Lexer_next(struct Lexer* this)
 			int value;
 			if (type == TOKEN_INTEGER)
 			{
-				value = strtol(this->src - 1,
-					(char**)&this->src, 0);
+				value = Lexer_parseInt(this);
 			}
 			else
 			{
@@ -42,6 +46,27 @@ Lexer_next(struct Lexer* this)
 	while (type != TOKEN_EOF);
 	Token_init(&token, TOKEN_EOF, 0, this->pos);
 	return token;
+}
+
+int
+Lexer_parseInt(struct Lexer* this)
+{
+	errno = 0;
+	char* endp;
+	long value = strtol(this->src - 1, &endp, 0);
+	if (this->src - 1 == endp) // should never happen
+	{
+		fprintf(stderr, "error(%d): could not parse integer\n",
+			this->pos);
+	}
+	else if (errno == ERANGE || value < INT_MIN || value > INT_MAX)
+	{
+		fprintf(stderr, "error(%d): integer too large\n",
+			this->pos);
+	}
+	this->pos += endp - this->src;
+	this->src = (const char*)endp;
+	return (int)value;
 }
 
 static enum TokenType
