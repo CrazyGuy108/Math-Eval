@@ -21,29 +21,25 @@ struct Token
 Lexer_next(struct Lexer* this)
 {
 	struct Token token;
-	char input;
-	enum TokenType type;
-	do
+	if (*this->src != '\0')
 	{
-		input = *this->src++;
-		++this->pos;
-		type = match(input);
-		if (type != TOKEN_INVALID)
+		char input;
+		enum TokenType type;
+		do
 		{
-			int value;
-			if (type == TOKEN_INTEGER)
+			input = *this->src++;
+			++this->pos;
+			type = match(input);
+			if (type != TOKEN_INVALID)
 			{
-				value = Lexer_parseInt(this);
+				int value = type != TOKEN_INTEGER ? 0
+					: Lexer_parseInt(this);
+				Token_init(&token, type, value, this->pos);
+				return token;
 			}
-			else
-			{
-				value = 0;
-			}
-			Token_init(&token, type, value, this->pos);
-			return token;
 		}
+		while (type != TOKEN_EOF);
 	}
-	while (type != TOKEN_EOF);
 	Token_init(&token, TOKEN_EOF, 0, this->pos);
 	return token;
 }
