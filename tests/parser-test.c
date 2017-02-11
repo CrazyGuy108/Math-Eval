@@ -10,7 +10,7 @@ main()
 	Lexer_init(&lexer, "10 + (-9)");
 	Parser_init(&parser, &lexer);
 
-	struct Expr* expr = Parser_parse(&parser, 0);
+	struct Expr* expr = Parser_parse(&parser, BP_MIN);
 	Expr_fprint(expr, stdout);
 
 	Parser_free(&expr);

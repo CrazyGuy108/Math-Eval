@@ -68,7 +68,7 @@ Token_nud(const struct Token* this, struct Parser* parser)
 	switch (this->type)
 	{
 	case TOKEN_LPAREN:
-		expr = Parser_parse(parser, 0);
+		expr = Parser_parse(parser, LBP_LPAREN);
 		if (Parser_consume(parser).type != TOKEN_RPAREN)
 		{
 			Parser_free(expr);
@@ -85,7 +85,7 @@ Token_nud(const struct Token* this, struct Parser* parser)
 		if (expr != NULL)
 		{
 			UnaryExpr_init((struct UnaryExpr*)expr, this->type,
-				Parser_parse(parser, 2));
+				Parser_parse(parser, this->lbp + 1));
 		}
 		break;
 	case TOKEN_ASTERISK:

@@ -27,14 +27,15 @@ enum TokenType
 // if rbp is omitted, it's assumed to be the same as the lbp
 enum BindingPower
 {
-	LBP_LPAREN   = 0,
-	LBP_RPAREN   = 0,
-	LBP_PLUS     = 1,
-	LBP_MINUS    = 1,
-	LBP_ASTERISK = 2,
-	LBP_SLASH    = 2,
-	LBP_CARET    = 3,
-	RBP_CARET    = 2, // right-associative
+	BP_MIN       = 0,
+	LBP_LPAREN   = 1,
+	LBP_RPAREN   = 1,
+	LBP_PLUS     = 2,
+	LBP_MINUS    = 2,
+	LBP_ASTERISK = 3,
+	LBP_SLASH    = 3,
+	LBP_CARET    = 4,
+	RBP_CARET    = 3, // right-associative
 	LBP_INTEGER  = 0,
 	LBP_EOF      = 0,
 	LBP_INVALID  = 0

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "parser.h"
+#include "token.h"
 
 int
 main()
@@ -21,7 +22,7 @@ main()
 		Lexer_init(&lexer, input);
 		Parser_init(&parser, &lexer);
 		struct Expr* expr =
-			Parser_parse((struct Parser*)&parser, 0);
+			Parser_parse((struct Parser*)&parser, BP_MIN);
 		printf("%d\n", Expr_eval(expr));
 		Parser_free(expr);
 	}
