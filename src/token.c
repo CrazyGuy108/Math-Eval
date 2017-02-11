@@ -75,10 +75,6 @@ Token_nud(const struct Token* this, struct Parser* parser)
 		expr = Token_error(this,
 			"found eof but expected an expression");
 		break;
-	case TOKEN_INVALID:
-		// pass - lexer already took care of that, or did it?
-		expr = NULL; // placeholder
-		break;
 	default:
 		expr = Token_error(this, "internal lexer error!!!");
 	}
@@ -116,10 +112,6 @@ Token_led(const struct Token* this, struct Parser* parser, struct Expr* left)
 	case TOKEN_EOF:
 		// return back the expr, since it found the end of file
 		expr = left;
-		break;
-	case TOKEN_INVALID:
-		// pass - lexer already took care of that, or did it?
-		expr = NULL; // placeholder
 		break;
 	default:
 		expr = Token_error(this, "internal lexer error!!!");
