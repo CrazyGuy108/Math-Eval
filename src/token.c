@@ -1,96 +1,7 @@
 #include "token.h"
 
 static struct Expr*
-nud_lparen(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_rparen(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_plus(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_minus(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_asterisk(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_slash(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_caret(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_integer(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_eof(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-nud_invalid(const struct Token* this, struct Parser* parser);
-
-static struct Expr*
-led_lparen(const struct Token* this, struct Parser* parser, struct Expr* left);
-
-static struct Expr*
-led_rparen(const struct Token* this, struct Parser* parser, struct Expr* left);
-
-static struct Expr*
-led_plus(const struct Token* this, struct Parser* parser, struct Expr* left);
-
-static struct Expr*
-led_minus(const struct Token* this, struct Parser* parser, struct Expr* left);
-
-static struct Expr*
-led_asterisk(const struct Token* this, struct Parser* parser,
-	struct Expr* left);
-
-static struct Expr*
-led_slash(const struct Token* this, struct Parser* parser, struct Expr* left);
-
-static struct Expr*
-led_caret(const struct Token* this, struct Parser* parser, struct Expr* left);
-
-static struct Expr*
-led_integer(const struct Token* this, struct Parser* parser,
-	struct Expr* left);
-
-static struct Expr*
-led_eof(const struct Token* this, struct Parser* parser, struct Expr* left);
-
-static struct Expr*
-led_invalid(const struct Token* this, struct Parser* parser,
-	struct Expr* left);
-
-static struct Expr* (*nud[])(const struct Token* this, struct Parser* parser) =
-{
-	&nud_lparen,
-	&nud_rparen,
-	&nud_plus,
-	&nud_minus,
-	&nud_asterisk,
-	&nud_slash,
-	&nud_caret,
-	&nud_integer,
-	&nud_eof,
-	&nud_invalid
-};
-
-static struct Expr* (*led[])(const struct Token* this, struct Parser* parser,
-	struct Expr* left) =
-{
-	&led_lparen,
-	&led_rparen,
-	&led_plus,
-	&led_minus,
-	&led_asterisk,
-	&led_slash,
-	&led_caret,
-	&led_integer,
-	&led_eof,
-	&led_invalid
-};
+Token_error(const struct Token* this, const char* msg);
 
 const char*
 TokenType_toString(enum TokenType type)
@@ -120,13 +31,99 @@ Token_init(struct Token* this, enum TokenType type, int value)
 struct Expr*
 Token_nud(const struct Token* this, struct Parser* parser)
 {
-	return nud[this->type](this, parser);
+	struct Expr* expr;
+	switch (this->type)
+	{
+	case TOKEN_LPAREN:
+		expr = Parser_parseExpr(parser, 0);
+		if (Parser_consume(parser).type != TOKEN_RPAREN)
+		{
+			expr = Token_error(this, "unmatched rparen");
+		}
+		break;
+	case TOKEN_RPAREN:
+		expr = Token_error(this,
+			"found rparen but expected an expression");
+		break;
+	case TOKEN_PLUS:
+	case TOKEN_MINUS:
+		expr = malloc(sizeof(struct UnaryExpr));
+		if (expr != NULL)
+		{
+			UnaryExpr_init((struct UnaryExpr*)expr, this->type,
+				Parser_parseExpr(parser, 2));
+		}
+		break;
+	case TOKEN_ASTERISK:
+		expr = Token_error(this, "asterisk is not a unary operator");
+		break;
+	case TOKEN_SLASH:
+		expr = Token_error(this, "slash is not a unary operator");
+		break;
+	case TOKEN_CARET:
+		expr = Token_error(this, "caret is not a unary operator");
+		break;
+	case TOKEN_INTEGER:
+		expr = malloc(sizeof(struct IntExpr));
+		if (expr != NULL)
+		{
+			IntExpr_init((struct IntExpr*)expr, this->value);
+		}
+		break;
+	case TOKEN_EOF:
+		expr = Token_error(this,
+			"found eof but expected an expression");
+		break;
+	case TOKEN_INVALID:
+		// pass - lexer already took care of that, or did it?
+		expr = NULL; // placeholder
+		break;
+	default:
+		expr = Token_error(this, "internal lexer error!!!");
+	}
+	return expr;
 }
 
 struct Expr*
 Token_led(const struct Token* this, struct Parser* parser, struct Expr* left)
 {
-	return led[this->type](this, parser, left);
+	struct Expr* expr;
+	switch (this->type)
+	{
+	case TOKEN_LPAREN:
+		expr = Token_error(this, "extraneous lparen");
+		break;
+	case TOKEN_RPAREN:
+		expr = Token_error(this, "extraneous rparen");
+		break;
+	case TOKEN_PLUS:
+	case TOKEN_MINUS:
+	case TOKEN_ASTERISK:
+	case TOKEN_SLASH:
+	case TOKEN_CARET:
+		expr = malloc(sizeof(struct BinaryExpr));
+		if (expr != NULL)
+		{
+			BinaryExpr_init((struct BinaryExpr*)expr, left,
+				this->type, Parser_parseExpr(parser, 2));
+		}
+		break;
+	case TOKEN_INTEGER:
+		expr = Token_error(this,
+			"found integer but expected an operator");
+		break;
+	case TOKEN_EOF:
+		// return back the expr, since it found the end of file
+		expr = left;
+		break;
+	case TOKEN_INVALID:
+		// pass - lexer already took care of that, or did it?
+		expr = NULL; // placeholder
+		break;
+	default:
+		expr = Token_error(this, "internal lexer error!!!");
+	}
+	return expr;
 }
 
 int
@@ -160,233 +157,13 @@ Token_getValue(const struct Token* this)
 }
 
 struct Expr*
-nud_lparen(const struct Token* this, struct Parser* parser)
+Token_error(const struct Token* this, const char* msg)
 {
-	struct Expr* expr = Parser_parseExpr(parser, 0);
-	struct Token rparen = Parser_consume(parser);
-	if (Token_getType(&rparen) != TOKEN_RPAREN)
-	{
-		fprintf(stderr, "error: unmatched rparen\n");
-		Parser_freeExpr(&expr);
-		expr = malloc(sizeof(struct NullExpr));
-		if (expr != NULL)
-		{
-			NullExpr_init((struct NullExpr*)expr);
-		}
-	}
-	return expr;
-}
-
-struct Expr*
-nud_rparen(const struct Token* this, struct Parser* parser)
-{
-	fprintf(stderr, "error: found rparen but expected an expression\n");
+	fprintf(stderr, "error: %s\n", msg);
 	struct Expr* expr = malloc(sizeof(struct NullExpr));
 	if (expr != NULL)
 	{
 		NullExpr_init((struct NullExpr*)expr);
 	}
 	return expr;
-}
-
-struct Expr*
-nud_plus(const struct Token* this, struct Parser* parser)
-{
-	struct Expr* expr = malloc(sizeof(struct UnaryExpr));
-	if (expr != NULL)
-	{
-		UnaryExpr_init((struct UnaryExpr*)expr, TOKEN_PLUS, Parser_parseExpr(parser, 2));
-	}
-	return expr;
-}
-
-struct Expr*
-nud_minus(const struct Token* this, struct Parser* parser)
-{
-	struct Expr* expr = malloc(sizeof(struct UnaryExpr));
-	if (expr != NULL)
-	{
-		UnaryExpr_init((struct UnaryExpr*)expr, TOKEN_MINUS, Parser_parseExpr(parser, 2));
-	}
-	return expr;
-}
-
-struct Expr*
-nud_asterisk(const struct Token* this, struct Parser* parser)
-{
-	fprintf(stderr, "error: asterisk is not a unary operator\n");
-	struct Expr* expr = malloc(sizeof(struct NullExpr));
-	if (expr != NULL)
-	{
-		NullExpr_init((struct NullExpr*)expr);
-	}
-	return expr;
-}
-
-struct Expr*
-nud_slash(const struct Token* this, struct Parser* parser)
-{
-	fprintf(stderr, "error: slash is not a unary operator\n");
-	struct Expr* expr = malloc(sizeof(struct NullExpr));
-	if (expr != NULL)
-	{
-		NullExpr_init((struct NullExpr*)expr);
-	}
-	return expr;
-}
-
-struct Expr*
-nud_caret(const struct Token* this, struct Parser* parser)
-{
-	fprintf(stderr, "error: caret is not a unary operator\n");
-	struct Expr* expr = malloc(sizeof(struct NullExpr));
-	if (expr != NULL)
-	{
-		NullExpr_init((struct NullExpr*)expr);
-	}
-	return expr;
-}
-
-struct Expr*
-nud_integer(const struct Token* this, struct Parser* parser)
-{
-	struct Expr* expr = malloc(sizeof(struct IntExpr));
-	if (expr != NULL)
-	{
-		IntExpr_init((struct IntExpr*)expr, this->value);
-	}
-	return expr;
-}
-
-struct Expr*
-nud_eof(const struct Token* this, struct Parser* parser)
-{
-	fprintf(stderr, "error: found eof but expected an expression\n");
-	struct Expr* expr = malloc(sizeof(struct NullExpr));
-	if (expr != NULL)
-	{
-		NullExpr_init((struct NullExpr*)expr);
-	}
-	return expr;
-}
-
-struct Expr*
-nud_invalid(const struct Token* this, struct Parser* parser)
-{
-	// pass - lexer already took care of that, or did it?
-	return NULL; // placeholder
-}
-
-struct Expr*
-led_lparen(const struct Token* this, struct Parser* parser, struct Expr* left)
-{
-	// function call or group application (wip)
-	return NULL; // placeholder
-}
-
-struct Expr*
-led_rparen(const struct Token* this, struct Parser* parser, struct Expr* left)
-{
-	fprintf(stderr, "error: extraneous rparan\n");
-	struct Expr* expr = malloc(sizeof(struct NullExpr));
-	if (expr != NULL)
-	{
-		NullExpr_init((struct NullExpr*)expr);
-	}
-	return expr;
-}
-
-struct Expr*
-led_plus(const struct Token* this, struct Parser* parser, struct Expr* left)
-{
-	// add
-	struct Expr* expr = malloc(sizeof(struct BinaryExpr));
-	if (expr != NULL)
-	{
-		BinaryExpr_init((struct BinaryExpr*)expr, left, TOKEN_PLUS,
-			Parser_parseExpr(parser, 1));
-	}
-	return expr;
-}
-
-struct Expr*
-led_minus(const struct Token* this, struct Parser* parser, struct Expr* left)
-{
-	// subtract
-	struct Expr* expr = malloc(sizeof(struct BinaryExpr));
-	if (expr != NULL)
-	{
-		BinaryExpr_init((struct BinaryExpr*)expr, left, TOKEN_MINUS,
-			Parser_parseExpr(parser, 1));
-	}
-	return expr;
-}
-
-struct Expr*
-led_asterisk(const struct Token* this, struct Parser* parser,
-	struct Expr* left)
-{
-	// multiply
-	struct Expr* expr = malloc(sizeof(struct BinaryExpr));
-	if (expr != NULL)
-	{
-		BinaryExpr_init((struct BinaryExpr*)expr, left, TOKEN_ASTERISK,
-			Parser_parseExpr(parser, 2));
-	}
-	return expr;
-}
-
-struct Expr*
-led_slash(const struct Token* this, struct Parser* parser, struct Expr* left)
-{
-	// divide
-	struct Expr* expr = malloc(sizeof(struct BinaryExpr));
-	if (expr != NULL)
-	{
-		BinaryExpr_init((struct BinaryExpr*)expr, left, TOKEN_SLASH,
-			Parser_parseExpr(parser, 2));
-	}
-	return expr;
-}
-
-struct Expr*
-led_caret(const struct Token* this, struct Parser* parser, struct Expr* left)
-{
-	// exponentiate
-	// right-associative, so the rbp passed in is one less than caret's lbp
-	struct Expr* expr = malloc(sizeof(struct BinaryExpr));
-	if (expr != NULL)
-	{
-		BinaryExpr_init((struct BinaryExpr*)expr, left, TOKEN_CARET,
-			Parser_parseExpr(parser, 2));
-	}
-	return expr;
-}
-
-struct Expr*
-led_integer(const struct Token* this, struct Parser* parser,
-	struct Expr* left)
-{
-	fprintf(stderr, "error: found integer but expected an operator\n");
-	struct Expr* expr = malloc(sizeof(struct NullExpr));
-	if (expr != NULL)
-	{
-		NullExpr_init((struct NullExpr*)expr);
-	}
-	return expr;
-}
-
-struct Expr*
-led_eof(const struct Token* this, struct Parser* parser, struct Expr* left)
-{
-	// return back the expr, since it found the end of file
-	return left;
-}
-
-struct Expr*
-led_invalid(const struct Token* this, struct Parser* parser,
-	struct Expr* left)
-{
-	// pass - lexer already took care of that, or did it?
-	return NULL; // placeholder
 }
