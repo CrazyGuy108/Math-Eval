@@ -7,7 +7,6 @@ extern "C"
 #endif
 
 #include <stdio.h>
-#include <stdlib.h>
 
 struct Parser;
 
@@ -34,7 +33,7 @@ Parser_parse(struct Parser* this, size_t rbp);
 
 // destroys an expression created by Parser_parse
 void
-Parser_free(struct Expr** expr);
+Parser_free(struct Expr* expr);
 
 // consumes the next token
 struct Token

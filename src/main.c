@@ -23,6 +23,6 @@ main()
 		struct Expr* expr =
 			Parser_parse((struct Parser*)&parser, 0);
 		printf("%d\n", Expr_eval(expr));
-		Parser_free(&expr);
+		Parser_free(expr);
 	}
 }

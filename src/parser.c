@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "parser.h"
 
 void
@@ -21,13 +22,12 @@ Parser_parse(struct Parser* this, size_t rbp)
 }
 
 void
-Parser_free(struct Expr** expr)
+Parser_free(struct Expr* expr)
 {
-	if (expr != NULL && *expr != NULL)
+	if (expr != NULL)
 	{
-		Expr_dtor(*expr);
-		free(*expr);
-		*expr = NULL;
+		Expr_dtor(expr);
+		free(expr);
 	}
 }
 

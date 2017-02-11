@@ -39,6 +39,7 @@ Token_nud(const struct Token* this, struct Parser* parser)
 		expr = Parser_parse(parser, 0);
 		if (Parser_consume(parser).type != TOKEN_RPAREN)
 		{
+			Parser_free(expr);
 			expr = Token_error(this, "unmatched rparen");
 		}
 		break;
