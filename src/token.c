@@ -22,10 +22,11 @@ TokenType_toString(enum TokenType type)
 }
 
 void
-Token_init(struct Token* this, enum TokenType type, int value)
+Token_init(struct Token* this, enum TokenType type, int value, size_t pos)
 {
 	this->type = type;
 	this->value = value;
+	this->pos = pos;
 }
 
 struct Expr*
@@ -159,7 +160,7 @@ Token_getValue(const struct Token* this)
 struct Expr*
 Token_error(const struct Token* this, const char* msg)
 {
-	fprintf(stderr, "error: %s\n", msg);
+	fprintf(stderr, "error(%zu): %s\n", this->pos, msg);
 	struct Expr* expr = malloc(sizeof(struct NullExpr));
 	if (expr != NULL)
 	{

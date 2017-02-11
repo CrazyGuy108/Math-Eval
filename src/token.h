@@ -6,6 +6,8 @@ extern "C"
 {
 #endif
 
+#include <stddef.h>
+
 // the type of token that a Token can represent
 enum TokenType
 {
@@ -26,6 +28,7 @@ struct Token
 {
 	enum TokenType type;
 	int value;
+	size_t pos;
 };
 
 #include "expr.h"
@@ -37,7 +40,7 @@ TokenType_toString(enum TokenType type);
 
 // Token constructor
 void
-Token_init(struct Token* this, enum TokenType type, int value);
+Token_init(struct Token* this, enum TokenType type, int value, size_t pos);
 
 // calls the null denotation (nud) of a token
 // this is called when an expression to the left of this token is bound to

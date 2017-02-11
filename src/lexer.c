@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include "lexer.h"
 
 // matches the current input against the lexer rules
@@ -5,9 +6,10 @@ static enum TokenType
 match(char input);
 
 void
-Lexer_init(struct Lexer* this, const char* source)
+Lexer_init(struct Lexer* this, const char* src)
 {
-	this->pos = source;
+	this->src = src;
+	this->pos = 0;
 }
 
 struct Token
@@ -15,28 +17,30 @@ Lexer_next(struct Lexer* this)
 {
 	struct Token token;
 	char input;
+	enum TokenType type;
 	do
 	{
-		input = *this->pos++;
-		enum TokenType type = match(input);
+		input = *this->src++;
+		++this->pos;
+		type = match(input);
 		if (type != TOKEN_INVALID)
 		{
 			int value;
 			if (type == TOKEN_INTEGER)
 			{
-				value = strtol(this->pos - 1,
-					(char**)&this->pos, 0);
+				value = strtol(this->src - 1,
+					(char**)&this->src, 0);
 			}
 			else
 			{
 				value = 0;
 			}
-			Token_init(&token, type, value);
+			Token_init(&token, type, value, this->pos);
 			return token;
 		}
 	}
-	while (input != '\0');
-	Token_init(&token, TOKEN_EOF, 0);
+	while (type != TOKEN_EOF);
+	Token_init(&token, TOKEN_EOF, 0, this->pos);
 	return token;
 }
 
