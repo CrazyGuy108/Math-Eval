@@ -121,7 +121,8 @@ Token_led(const struct Token* this, struct Parser* parser, struct Expr* left)
 	switch (this->type)
 	{
 	case TOKEN_LPAREN:
-		expr = Token_error(this, "extraneous lparen");
+		expr = Token_error(this,
+			"multiplication by juxtaposition not supported yet");
 		break;
 	case TOKEN_RPAREN:
 		expr = Token_error(this, "extraneous rparen");
