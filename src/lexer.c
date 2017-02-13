@@ -76,6 +76,7 @@ match(char input)
 	case '-':  return TOKEN_MINUS;
 	case '*':  return TOKEN_ASTERISK;
 	case '/':  return TOKEN_SLASH;
+	case '%':  return TOKEN_MODULO;
 	case '^':  return TOKEN_CARET;
 	case '\r': case '\n': case '\0': return TOKEN_EOF;
 	default:   return isdigit(input) ? TOKEN_INTEGER : TOKEN_INVALID;

@@ -17,6 +17,7 @@ enum TokenType
 	TOKEN_MINUS,
 	TOKEN_ASTERISK,
 	TOKEN_SLASH,
+	TOKEN_MODULO,
 	TOKEN_CARET,
 	TOKEN_INTEGER,
 	TOKEN_EOF,
@@ -34,6 +35,7 @@ enum BindingPower
 	LBP_MINUS    = 2,
 	LBP_ASTERISK = 3,
 	LBP_SLASH    = 3,
+	LBP_MODULO   = 3,
 	LBP_CARET    = 4,
 	RBP_CARET    = 3, // right-associative
 	LBP_INTEGER  = 0,

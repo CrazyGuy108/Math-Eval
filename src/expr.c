@@ -217,6 +217,7 @@ BinaryExpr_v_eval(const struct BinaryExpr* this)
 	case TOKEN_CARET:    return pow((double)left, (double)right);
 	case TOKEN_ASTERISK: return left * right;
 	case TOKEN_SLASH:    return left / right;
+	case TOKEN_MODULO:   return left % right;
 	case TOKEN_PLUS:     return left + right;
 	case TOKEN_MINUS:    return left - right;
 	default:             return 0;

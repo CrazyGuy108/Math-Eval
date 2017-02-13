@@ -14,6 +14,7 @@ TokenType_toString(enum TokenType type)
 	case TOKEN_MINUS:    return "minus";
 	case TOKEN_ASTERISK: return "asterisk";
 	case TOKEN_SLASH:    return "slash";
+	case TOKEN_MODULO:   return "modulo";
 	case TOKEN_CARET:    return "caret";
 	case TOKEN_INTEGER:  return "integer";
 	case TOKEN_EOF:      return "eof";
@@ -44,6 +45,9 @@ Token_init(struct Token* this, enum TokenType type, int value, size_t pos)
 		break;
 	case TOKEN_SLASH:
 		this->lbp = LBP_SLASH;
+		break;
+	case TOKEN_MODULO:
+		this->lbp = LBP_MODULO;
 		break;
 	case TOKEN_CARET:
 		this->lbp = LBP_CARET;
@@ -94,6 +98,9 @@ Token_nud(const struct Token* this, struct Parser* parser)
 	case TOKEN_SLASH:
 		expr = Token_error(this, "slash is not a unary operator");
 		break;
+	case TOKEN_MODULO:
+		expr = Token_error(this, "modulo is not a unary operator");
+		break;
 	case TOKEN_CARET:
 		expr = Token_error(this, "caret is not a unary operator");
 		break;
@@ -131,6 +138,7 @@ Token_led(const struct Token* this, struct Parser* parser, struct Expr* left)
 	case TOKEN_MINUS:
 	case TOKEN_ASTERISK:
 	case TOKEN_SLASH:
+	case TOKEN_MODULO:
 		expr = malloc(sizeof(struct BinaryExpr));
 		if (expr != NULL)
 		{
