@@ -1,13 +1,24 @@
 #include <stdio.h>
 #include "../src/lexer.h"
 
+static void
+test(const char* input, const char* expected);
+
 int
 main()
 {
+	test("(-1337) - 21", "lparen:0, minus:0, integer:1337, rparen:0, minus:0, integer:21, eof:0");
+}
+
+void
+test(const char* input, const char* expected)
+{
 	struct Lexer lexer;
 	// initialize lexer
-	Lexer_init(&lexer, "(-1337) - 21");
-	puts("Actual:");
+	Lexer_init(&lexer, input);
+	puts("Input:");
+	puts(input);
+	puts("Actual Output:");
 	// print each individual token
 	// the first token is printed without a comma
 	struct Token token = Lexer_next(&lexer);
@@ -21,5 +32,7 @@ main()
 			Token_getValue(&token));
 	}
 	while (Token_getType(&token) != TOKEN_EOF);
-	puts("\nExpected:\nlparen:0, minus:0, integer:1337, rparen:0, minus:0, integer:21, eof:0");
+	// print the expected output
+	puts("\nExpected Output:");
+	puts(expected);
 }
