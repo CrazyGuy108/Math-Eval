@@ -1,6 +1,10 @@
 #include <math.h>
 #include "expr.h"
 
+// computes the factorial of a number
+static int
+facti(int n);
+
 typedef void (*Expr_dtor_t)(struct Expr*);
 typedef int (*Expr_eval_t)(const struct Expr*);
 typedef void (*Expr_fprint_t)(const struct Expr*, FILE*);
@@ -201,6 +205,7 @@ UnaryExpr_v_eval(const struct UnaryExpr* this)
 	int expr = Expr_eval(this->expr);
 	switch (this->operator)
 	{
+	case TOKEN_FACT:  return facti(expr);
 	case TOKEN_PLUS:  return expr;
 	case TOKEN_MINUS: return -expr;
 	default:          return 0;
@@ -258,4 +263,15 @@ void
 NullExpr_v_fprint(const struct NullExpr* this, FILE* stream)
 {
 	fprintf(stream, "null");
+}
+
+int
+facti(int n)
+{
+	int result = 1;
+	for (int i = 2; i <= n; ++i)
+	{
+		result *= i;
+	}
+	return result;
 }

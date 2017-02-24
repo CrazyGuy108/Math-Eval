@@ -19,6 +19,7 @@ enum TokenType
 	TOKEN_SLASH,
 	TOKEN_MODULO,
 	TOKEN_CARET,
+	TOKEN_FACT,
 	TOKEN_INTEGER,
 	TOKEN_EOF,
 	TOKEN_INVALID
@@ -38,6 +39,7 @@ enum BindingPower
 	LBP_MODULO   = 3,
 	LBP_CARET    = 4,
 	RBP_CARET    = 3, // right-associative
+	LBP_FACT     = 5,
 	LBP_INTEGER  = 0,
 	LBP_EOF      = 0,
 	LBP_INVALID  = 0
