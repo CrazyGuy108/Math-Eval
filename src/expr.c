@@ -1,5 +1,8 @@
-#include <math.h>
 #include "expr.h"
+
+// computes the integer power
+static int
+powi(int base, int exponent);
 
 // computes the factorial of a number
 static int
@@ -219,7 +222,7 @@ BinaryExpr_v_eval(const struct BinaryExpr* this)
 	int right = Expr_eval(this->right);
 	switch (this->operator)
 	{
-	case TOKEN_CARET:    return pow((double)left, (double)right);
+	case TOKEN_CARET:    return powi(left, right);
 	case TOKEN_ASTERISK: return left * right;
 	case TOKEN_SLASH:    return left / right;
 	case TOKEN_MODULO:   return left % right;
@@ -263,6 +266,27 @@ void
 NullExpr_v_fprint(const struct NullExpr* this, FILE* stream)
 {
 	fprintf(stream, "null");
+}
+
+int
+powi(int base, int exp)
+{
+	if (exp < 0)
+	{
+		return 0; // basically rounding negative exponents
+	}
+	// O(1) space, O(log(n)) time
+	int result = 1;
+	while (exp != 0)
+	{
+		if (exp % 2 == 1)
+		{
+			result *= base;
+		}
+		base *= base;
+		exp /= 2;
+	}
+	return result;
 }
 
 int
